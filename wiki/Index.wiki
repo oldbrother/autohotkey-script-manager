@@ -4,6 +4,8 @@
 =AHK Script Manager=
 AHK Script Manager是一款用于管理常用ahk脚本执行的桌面工具，它可以方便地控制常用ahk脚本的启动、关闭、重载。本项目致力于常用ahk脚本的开发，而AHK Script Manager本身的变动可能会比较小。
 
+个人愿望，是希望通过AHK Script Manager方便桌面操作。但对于快捷键的使用上，主张够用就好，本人并不赞同太多的快捷键设置。
+
 AHK Script Manager管理三种类型的脚本:
   * 常驻脚本(正常命名的脚本)
   * 临时常驻脚本(命名以"!"开头的脚本)
