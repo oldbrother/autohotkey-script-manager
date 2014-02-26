@@ -1,0 +1,12 @@
+
+= NetMeter.ahk =
+
+一个显示网络实时流量的脚本，由Sean开发。
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
