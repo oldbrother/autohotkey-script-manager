@@ -1,0 +1,5 @@
+#summary 脚本说明
+
+= NetMeter.ahk =
+
+一个显示网络实时流量的脚本，由Sean开发。
