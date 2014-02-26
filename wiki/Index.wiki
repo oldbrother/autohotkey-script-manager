@@ -44,8 +44,3 @@ AHK Script Manager管理三种类型的脚本:
   # +网络连接.ahk
   # +一键显隐.ahk
   # +重启Explorer.ahk
-
-==软件要求==
-  * AHK:         AutoHotkey_L Unicode, 版本号1.1.14.01
-  * 操作系统:    Windows XP SP3
-  * ahk脚本编码: UTF-8+BOM
