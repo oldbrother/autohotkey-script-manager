@@ -7,6 +7,10 @@ Ctrl + Alt + 左键		唤出"启动脚本"菜单
 AHK帮助.ahk
 Alt + H					在AHK帮助文件中查找剪切板内容
 
+CMD.ahk
+Ctrl + L				仿Linux Term下Ctrl+L的清屏行为
+Ctrl + V				CMD窗口粘贴
+
 复制粘贴.ahk
 Ctrl + 1				复制1
 Ctrl + 2				复制2
@@ -16,8 +20,8 @@ Alt + 2					粘贴2
 Alt + 3					粘贴3
 
 截图.ahk
-Ctrl + Shift + 左键:	截图存为PNG图片，并保存到桌面
-Ctrl + Shift + 右键:	截图保存到ClipBoard中，用于直接粘贴
+Ctrl + Shift + 左键		截图存为PNG图片，并保存到桌面
+Ctrl + Shift + 右键		截图保存到ClipBoard中，用于直接粘贴
 
 锁屏.ahk
-Win + ;:				锁屏并关闭屏幕. 功能上代替Win+L
+Win + ;					锁屏并关闭屏幕. 功能上代替Win+L
