@@ -1,12 +1,16 @@
 #summary 脚本功能描述
 
-= NetMeter.ahk =
+= 常驻脚本 =
+== NetMeter.ahk ==
 
 一个显示网络实时流量的脚本，由Sean开发。
 
-== TODO ==
+=== TODO ===
 该脚本未提供流量的实时数据显示，后续可以考虑在进度条上叠加数字。
 
-= +Oracle服务.ahk =
+= 临时常驻脚本 =
+== +Oracle服务.ahk ==
 
 列出可用的Oracle Service，双击快速启动、停止服务。
+
+= 一次性任务脚本 =
