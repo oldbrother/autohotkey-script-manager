@@ -1,4 +1,4 @@
-#labels Phase-Design
+#labels description
 = NetMeter.ahk =
 
 一个显示网络实时流量的脚本，由Sean开发。
