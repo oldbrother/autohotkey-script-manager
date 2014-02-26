@@ -1,15 +1,15 @@
 ﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 闹钟
-; 关闭方法: 闹钟响后直接把笔记本合上，让笔记本进入休眠
+; 注意：启动时没有声音，表示声音有问题，需要手动解决
 ;
 ; gaochao.morgen@gmail.com
 ; 2014/1/19
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#Persistent				; 让脚本持久运行（即直到用户关闭或遇到 ExitApp）
-#SingleInstance Force	; 跳过对话框并自动替换旧实例
-#NoTrayIcon				; 不显示托盘图标
-#NoEnv					; 不检查空变量是否为环境变量（建议所有新脚本使用）
+#Persistent
+#SingleInstance Force
+#NoTrayIcon
+#NoEnv
 
 ; 默认早上6点40的闹钟
 dStartH := 6			; 默认起始时间
@@ -21,7 +21,7 @@ SoundGet, master_mute,, MUTE
 if (master_mute = "On")
 	SoundSet, 0,, MUTE
 
-SoundPlay, %A_WinDir%\Media\start.wav, WAIT	; 启动时没有声音，表示声音有问题，需要手动解决
+SoundPlay, %A_WinDir%\Media\start.wav, WAIT
 
 SetTimer, Alarm, 120000	; 两分钟
 

@@ -12,8 +12,8 @@
 ; Data Type: REG_DWORD (DWORD Value)
 ; Value Data: (0 = show hidden, 1 = do not show)
 
-#SingleInstance Force	; 跳过对话框并自动替换旧实例
-#NoEnv					; 不检查空变量是否为环境变量（建议所有新脚本使用）
+#SingleInstance Force
+#NoEnv
 
 ; 文件夹显隐
 RegRead, ShowHidden_Status, HKEY_CURRENT_USER, Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced, Hidden
