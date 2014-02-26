@@ -1,0 +1,20 @@
+﻿AHK Script Manager
+Ctrl + Alt + A			关闭所有脚本
+Ctrl + Alt + 中键		唤出"重载脚本"菜单
+Ctrl + Alt + 右键		唤出"关闭脚本"菜单
+Ctrl + Alt + 左键		唤出"启动脚本"菜单
+
+AHK帮助.ahk
+Alt + H					在AHK帮助文件中查找剪切板内容
+
+复制粘贴.ahk
+Ctrl + 1				复制1
+Ctrl + 2				复制2
+Ctrl + 3				复制3
+Alt + 1					粘贴1
+Alt + 2					粘贴2
+Alt + 3					粘贴3
+
+截图.ahk
+Ctrl + Shift + 左键:	截图存为PNG图片，并保存到桌面
+Ctrl + Shift + 右键:	截图保存到ClipBoard中，用于直接粘贴
