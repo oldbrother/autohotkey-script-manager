@@ -5,9 +5,9 @@
 ; 2014/2/4
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#SingleInstance Force	; 跳过对话框并自动替换旧实例
-#NoTrayIcon				; 不显示托盘图标
-#NoEnv					; 不检查空变量是否为环境变量（建议所有新脚本使用）
+#SingleInstance Force
+#NoTrayIcon
+#NoEnv
 
 StringReplace, Clipboard, Clipboard, ＼, \, All			; 网络文章"＼","\"不分
 StringReplace, Clipboard, Clipboard, /, \, All			; "/"改为"\"

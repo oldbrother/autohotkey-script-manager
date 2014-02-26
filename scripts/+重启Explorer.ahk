@@ -5,8 +5,8 @@
 ; 2013/7/2
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#SingleInstance Force	; 跳过对话框并自动替换旧实例
-#NoEnv					; 不检查空变量是否为环境变量（建议所有新脚本使用）
+#SingleInstance Force
+#NoEnv
 
 ; 将ErrorLevel置为本脚本PID
 Process, Exist

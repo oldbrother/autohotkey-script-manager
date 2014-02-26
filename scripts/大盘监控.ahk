@@ -6,10 +6,10 @@
 ; 2014/1/20
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#Persistent				; 让脚本持久运行（即直到用户关闭或遇到 ExitApp）
-#SingleInstance Force	; 跳过对话框并自动替换旧实例
-#NoTrayIcon				; 不显示托盘图标
-#NoEnv					; 不检查空变量是否为环境变量（建议所有新脚本使用）
+#Persistent
+#SingleInstance Force
+#NoTrayIcon
+#NoEnv
 
 ;; 夏令时: 巴西时间凌晨4点30，中国时间下午2点30
 ;TARGET_HOUR := 4

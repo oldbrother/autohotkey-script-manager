@@ -24,7 +24,7 @@ OnExit, ShowCursor		; 确保到脚本退出时鼠标光标是显示的.
 	}
 	else
 	{
-		Run, "F:\编程与优化\AutoHotKey\AutoHotkey 1.1.chm",, Max
+		Run, %ProgramFiles%\AutoHotkey\AutoHotkey.chm,, Max
 	}
 
 	Sleep, 500

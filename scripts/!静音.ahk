@@ -12,10 +12,10 @@
 ; 2014/1/19
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-#Persistent				; 让脚本持久运行（即直到用户关闭或遇到 ExitApp）
-#SingleInstance Force	; 跳过对话框并自动替换旧实例
-#NoTrayIcon				; 不显示托盘图标
-#NoEnv					; 不检查空变量是否为环境变量（建议所有新脚本使用）
+#Persistent
+#SingleInstance Force
+#NoTrayIcon
+#NoEnv
 
 OnExit, MuteOff			; 确保到脚本退出时声音打开.
 

@@ -4,7 +4,7 @@
 ;
 #SingleInstance, Force
 #NoTrayIcon
-#NoEnv					; 不检查空变量是否为环境变量（建议所有新脚本使用）
+#NoEnv
 
 Gui, -Caption +Border +AlwaysOnTop +ToolWindow
 Gui, Color, EEAA99
