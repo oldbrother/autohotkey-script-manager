@@ -23,6 +23,8 @@
   == _AHK帮助.ahk_ ==
   一键启动AHK帮助文件，并检索剪切板中的内容。
 
+  我用了中文文档替换安装目录的英文文档。中文文档下载地址http://sourceforge.net/projects/ahkcn/
+
   ==== 快捷键 ====
   Alt + H
 
