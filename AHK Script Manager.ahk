@@ -87,9 +87,9 @@ Menu, Tray, Add, 关闭所有脚本(&A)`tCtrl + Alt + A, tsk_closeAll				; A: Al
 Menu, Tray, Add
 Menu, Tray, Add, 进程管理(&P), tsk_showproc									; P: Process
 Menu, Tray, Add
-Menu, Tray, Add, 打开伴侣目录(&D), Menu_Tray_OpenDir						; D: Directory
+Menu, Tray, Add, 打开源码目录(&D), Menu_Tray_OpenDir						; D: Directory
 Menu, Tray, Add
-Menu, Tray, Add, 重启伴侣(&B), Menu_Tray_Reload								; B: reBoot
+Menu, Tray, Add, 重启Manager(&B), Menu_Tray_Reload							; B: reBoot
 Menu, Tray, Add
 Menu, Tray, Add, 退出(&X)`tCtrl + Alt + X, Menu_Tray_Exit
 Menu, Tray, NoStandard
@@ -253,12 +253,12 @@ tsk_closeAll:
 	}
 Return
 
-; 打开伴侣目录
+; 打开源码目录
 Menu_Tray_OpenDir:
 	Run, %A_ScriptDir%\scripts,, Max
 Return
 
-; 重启伴侣
+; 重启Manager
 Menu_Tray_Reload:
 	Reload
 Return

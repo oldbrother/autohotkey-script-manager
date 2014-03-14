@@ -15,6 +15,6 @@
 SetTimer, ArpDelete, 60000
 
 ArpDelete:
-	Run, cmd /c arp -d,, Hide
+	Run, cmd /c arp -d,, Hide				; 清除ARP缓存
 Return
 
