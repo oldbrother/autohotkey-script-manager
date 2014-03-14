@@ -1,8 +1,0 @@
-#summary 共同开发
-#labels Phase-Design
-
-= 共同开发 =
-
-诚邀有志之士加入，添加更多的实用功能，简化日常事务。同时在更多平台上测试，目前仅在XP SP3下测试无重大BUG，但是迁移到Win7或者更高版本是必然的。
-
-请联系gaochao.morgen@gmail.com
