@@ -17,7 +17,7 @@ FileEncoding, %CURRENENCODING%
 Gui, Add, Button, x6 y7 w60 h20 gSetAnsi, ANSI
 Gui, Add, Button, x86 y7 w60 h20 gSetUtf8, UTF-8
 Gui, Add, Button, x506 y7 w60 h20 gAlignColumn, 对齐
-Gui, Add, Edit, x6 y37 w560 h330 vMyEdit, Drag plant TXT file into this control
+Gui, Add, Edit, x6 y37 w560 h330 vMyEdit, Drag plain TXT file into this control
 Gui, Add, StatusBar,, %CURRENENCODING%
 Gui, Show,, 文本竖列对齐
 Return
