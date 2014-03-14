@@ -6,10 +6,10 @@
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
-; Ctrl + Alt + 左键		唤出"启动脚本"菜单
-; Ctrl + Alt + 中键		唤出"重载脚本"菜单
-; Ctrl + Alt + 右键		唤出"关闭脚本"菜单
-; Ctrl + Alt + A		关闭所有脚本
+; Ctrl + Alt + 左键    唤出"启动脚本"菜单
+; Ctrl + Alt + 中键    唤出"重载脚本"菜单
+; Ctrl + Alt + 右键    唤出"关闭脚本"菜单
+; Ctrl + Alt + A       关闭所有脚本
 ;
 ; 删除一些不必要的功能，增加非驻守脚本(文件名以"+"开头)的处理
 ; gaochao.morgen@gmail.com
@@ -31,8 +31,8 @@
 
 SetWorkingDir %A_ScriptDir%\scripts\
 
-DetectHiddenWindows On	; 允许探测脚本中隐藏的主窗口. 很多子程序均是以隐藏方式运行的
-SetTitleMatchMode 2		; 避免需要指定如下所示的文件的完整路径
+DetectHiddenWindows On  ; 允许探测脚本中隐藏的主窗口. 很多子程序均是以隐藏方式运行的
+SetTitleMatchMode 2     ; 避免需要指定如下所示的文件的完整路径
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                     初始化                            ;
@@ -79,17 +79,17 @@ Menu, Tray, Add, AHK Script Manager, Menu_Show
 Menu, Tray, ToggleEnable, AHK Script Manager
 Menu, Tray, Default, AHK Script Manager
 Menu, Tray, Add
-Menu, Tray, Add, 启动脚本(&S)`tCtrl + Alt + 左键, :scripts_unopen			; S: Start
+Menu, Tray, Add, 启动脚本(&S)`tCtrl + Alt + 左键, :scripts_unopen           ; S: Start
 Menu, Tray, Add
-Menu, Tray, Add, 重载脚本(&R)`tCtrl + Alt + 中键, :scripts_restart			; R: Restart
-Menu, Tray, Add, 关闭脚本(&C)`tCtrl + Alt + 右键, :scripts_unclose			; C: Close
-Menu, Tray, Add, 关闭所有脚本(&A)`tCtrl + Alt + A, tsk_closeAll				; A: All
+Menu, Tray, Add, 重载脚本(&R)`tCtrl + Alt + 中键, :scripts_restart          ; R: Restart
+Menu, Tray, Add, 关闭脚本(&C)`tCtrl + Alt + 右键, :scripts_unclose          ; C: Close
+Menu, Tray, Add, 关闭所有脚本(&A)`tCtrl + Alt + A, tsk_closeAll             ; A: All
 Menu, Tray, Add
-Menu, Tray, Add, 进程管理(&P), tsk_showproc									; P: Process
+Menu, Tray, Add, 进程管理(&P), tsk_showproc                                 ; P: Process
 Menu, Tray, Add
-Menu, Tray, Add, 打开源码目录(&D), Menu_Tray_OpenDir						; D: Directory
+Menu, Tray, Add, 打开源码目录(&D), Menu_Tray_OpenDir                        ; D: Directory
 Menu, Tray, Add
-Menu, Tray, Add, 重启Manager(&B), Menu_Tray_Reload							; B: reBoot
+Menu, Tray, Add, 重启Manager(&B), Menu_Tray_Reload                          ; B: reBoot
 Menu, Tray, Add
 Menu, Tray, Add, 退出(&X)`tCtrl + Alt + X, Menu_Tray_Exit
 Menu, Tray, NoStandard
@@ -134,7 +134,7 @@ tsk_open:
 	    thisScript := scriptsName%A_Index%
 	    if thisScript = %A_ThisMenuItem%.ahk
 	    {
-	        IfWinNotExist, %thisScript% - AutoHotkey	; 没有打开
+	        IfWinNotExist, %thisScript% - AutoHotkey    ; 没有打开
 	            Run, %A_ScriptDir%\scripts\%thisScript%
 	
 			IfInString, thisScript, + ; 文件名中含"+"表示非驻守脚本，执行完会立即退出
@@ -181,11 +181,11 @@ tsk_openAll:
 	Loop, %scriptCount%
 	{
 	    thisScript := scriptsName%A_Index%
-	    if scriptsOpened%A_Index% = 0	; 没打开
+	    if scriptsOpened%A_Index% = 0 ; 没打开
 	    {
 	        IfInString, thisScript, ! ; 文件名中含"!"表示不自动启动脚本，则不启动
 			{
-				if scriptsExisted%A_Index% != 1	; AHK Manager启动前该脚本未启动
+				if scriptsExisted%A_Index% != 1 ; AHK Manager启动前该脚本未启动
 		    		continue
 			}
 	
@@ -195,7 +195,7 @@ tsk_openAll:
 					continue
 			}
 	
-	        IfWinNotExist, %thisScript% - AutoHotkey    ; 没有打开
+	        IfWinNotExist, %thisScript% - AutoHotkey ; 没有打开
 			{
 	            Run, %A_ScriptDir%\scripts\%thisScript%
 	
@@ -218,7 +218,7 @@ tsk_showproc:
 	Loop, %scriptCount%
 	{
 	    thisScript := scriptsName%A_Index%
-	    if scriptsOpened%A_Index% = 1	; 已打开
+	    if scriptsOpened%A_Index% = 1 ; 已打开
 	    {
 			ShowIndex += 1
 			WinGet, procId, PID, %thisScript% - AutoHotkey
@@ -226,7 +226,7 @@ tsk_showproc:
 	    	LV_Add("", ShowIndex, procId, thisScript, memory)
 	    }
 	}
-	LV_ModifyCol()  ; 根据内容自动调整每列的大小
+	LV_ModifyCol() ; 根据内容自动调整每列的大小
 	Gui, Show,, Process List
 Return
 
@@ -240,7 +240,7 @@ tsk_closeAll:
 	Loop, %scriptCount%
 	{
 	    thisScript := scriptsName%A_Index%
-	    if scriptsOpened%A_Index% = 1	; 已打开
+	    if scriptsOpened%A_Index% = 1 ; 已打开
 	    {
 	        WinClose, %thisScript% - AutoHotkey
 	        scriptsOpened%A_Index% = 0
@@ -299,14 +299,14 @@ Return
 
 ; 重建子菜单
 RecreateMenus:
-	Menu, scripts_unopen, DeleteAll		; 剩下空菜单
-	Menu, scripts_unclose, DeleteAll	; 剩下空菜单
-	Menu, scripts_restart, DeleteAll	; 剩下空菜单
+	Menu, scripts_unopen, DeleteAll     ; 剩下空菜单
+	Menu, scripts_unclose, DeleteAll    ; 剩下空菜单
+	Menu, scripts_restart, DeleteAll    ; 剩下空菜单
 
 	GoSub CreateMenus
 
-	OpenList := Array()		; 已打开脚本列表
-	UnOpenList := Array()	; 未打开脚本列表
+	OpenList := Array()     ; 已打开脚本列表
+	UnOpenList := Array()   ; 未打开脚本列表
 	Loop, %scriptCount%
 	{
 	    StringRePlace, menuName, scriptsName%A_Index%, .ahk
@@ -316,7 +316,7 @@ RecreateMenus:
 			UnOpenList.Insert(menuName)
 	}
 	
-	InsertionSort(OpenList)	; 排序
+	InsertionSort(OpenList) ; 排序
 	for Index, menuName in OpenList
 	{
 		Menu, scripts_unclose, Add, %menuName%, tsk_close
@@ -338,7 +338,7 @@ ExitSub:
     Loop, %scriptCount%
     {
         thisScript := scriptsName%A_Index%
-        if scriptsOpened%A_Index% = 1	; 已打开
+        if scriptsOpened%A_Index% = 1 ; 已打开
         {
             WinClose, %thisScript% - AutoHotkey
             scriptsOpened%A_Index% = 0
