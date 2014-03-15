@@ -1,16 +1,18 @@
-﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 将文件按照竖列对齐，并且将TAB替换成空格
+; 目前仅支持ANSI编码和UTF-8编码的文件
 ; 
 ; gaochao.morgen@gmail.com
 ; 2014/3/14
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #SingleInstance Force
 #NoTrayIcon
 #NoEnv
 
 INFILE := 
-OUTFILE := A_WorkingDir . "\tmp.txt"
+AWKOUTFILE := A_WorkingDir . "\awktmp.txt"
+SEDOUTFILE := A_WorkingDir . "\sedtmp.txt"
 CURRENENCODING := "UTF-8"
 FileEncoding, %CURRENENCODING%
 
@@ -53,28 +55,50 @@ Return
 AlignColumn:
     GAWK := "gawk -f "
     PATTERN := A_WorkingDir . "\..\3rd\alignColumn.awk"
-    
-    COMMAND := GAWK
-    COMMAND .= """"
-    COMMAND .= PATTERN
-    COMMAND .= """"
-    COMMAND .= " "
-    COMMAND .= """"
-    COMMAND .= INFILE
-    COMMAND .= """ > """
-	COMMAND .= OUTFILE
-	COMMAND .= """"
 
-	;MsgBox, % COMMAND
-	RunWait, cmd /c %COMMAND%,, Hide
+    AWKCOMMAND := GAWK
+    AWKCOMMAND .= """"
+    AWKCOMMAND .= PATTERN
+    AWKCOMMAND .= """"
+    AWKCOMMAND .= " "
+    AWKCOMMAND .= """"
+    AWKCOMMAND .= INFILE
+    AWKCOMMAND .= """"
+    AWKCOMMAND .= " > """
+	AWKCOMMAND .= AWKOUTFILE
+	AWKCOMMAND .= """"
+
+	; 竖列对齐
+	RunWait, cmd /c %AWKCOMMAND%,, Hide
+
+	SED := "sed -f "
+	PATTERN := A_WorkingDir . "\..\3rd\trimtail.sed"
+
+	SEDCOMMAND := SED
+	SEDCOMMAND .= """"
+	SEDCOMMAND .= PATTERN
+	SEDCOMMAND .= """"
+	SEDCOMMAND .= " "
+	SEDCOMMAND .= """"
+	SEDCOMMAND .= AWKOUTFILE
+	SEDCOMMAND .= """"
+	SEDCOMMAND .= " > """
+	SEDCOMMAND .= SEDOUTFILE
+	SEDCOMMAND .= """"
+
+	; 消除行末空格
+	RunWait, cmd /c %SEDCOMMAND%,, Hide
+
+	; 打开处理后的文件
 	If (CURRENENCODING = "UTF-8")
-	    FileRead, FileContents, *P65001 %OUTFILE%
+	    FileRead, FileContents, *P65001 %SEDOUTFILE%
 	Else
-	    FileRead, FileContents, *P936 %OUTFILE%
+	    FileRead, FileContents, *P936 %SEDOUTFILE%
 	GuiControl,, MyEdit, %FileContents%
 Return
 
 GuiClose:
-    FileDelete, %OUTFILE%
+    FileDelete, %AWKOUTFILE%
+    FileDelete, %SEDOUTFILE%
 ExitApp
 
