@@ -1,104 +1,205 @@
-﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 将文件按照竖列对齐，并且将TAB替换成空格
-; 目前仅支持ANSI编码和UTF-8编码的文件
+; 对齐后的内容自动拷贝到剪切板中
+;
+; 支持的待处理文本编码方式: ANSI, UTF-8, UTF-8+BOM, UTF-16
+;
+; 待处理文本的编码，是本脚本重点考虑的问题
+; 一方面，AHK处理的外部文件，推荐ANSI和UTF-8+BOM，它处理UTF-8会有问题.
+; 另一方面，Linux衍生命令处理外部文件推荐ANSI和UTF-8，它处理UTF-8+BOM会有问题.
+; 
+; UTF-8上的复杂性，是因为Linux和Windows在对待UTF-8编码是否带BOM上存在分歧，
+; 前者建议不带(因此对UTF-8支持很好)后者默认带BOM(因此对UTF-8+BOM支持很好).
+;
+; 基于此原因，无论待处理文件采用何种编码，最后均试图转换成ANSI编码
+; 这样一方面Linux衍生命令如gawk, iconv等均执行正常，而AHK脚本也工作正常
 ; 
 ; gaochao.morgen@gmail.com
 ; 2014/3/14
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #SingleInstance Force
 #NoTrayIcon
 #NoEnv
 
-INFILE := 
-AWKOUTFILE := A_WorkingDir . "\awktmp.txt"
-SEDOUTFILE := A_WorkingDir . "\sedtmp.txt"
-CURRENENCODING := "UTF-8"
-FileEncoding, %CURRENENCODING%
+FileEncoding    ; 脚本默认以ANSI编码处理外部文件
 
-Gui, Add, Button, x6 y7 w60 h20 gSetAnsi, ANSI
-Gui, Add, Button, x86 y7 w60 h20 gSetUtf8, UTF-8
+INFILE :=       ; 待处理文件，编码方式: ANSI, UTF-8, UTF-8+BOM, UTF-16
+ENCODING :=     ; 待处理文件的编码方式
+
+ICONVOUTFILE := A_WorkingDir . "\iconvtmp.txt"  ; ICONV处理后的文件，ANSI编码
+AWKOUTFILE := A_WorkingDir . "\awktmp.txt"      ; AWK处理后的文件，ANSI编码
+SEDOUTFILE := A_WorkingDir . "\sedtmp.txt"      ; SED处理后的文件，ANSI编码
+
+Gui, Add, Button, x6 y7 w80 h20 gSetAnsi, 修正乱码
 Gui, Add, Button, x506 y7 w60 h20 gAlignColumn, 对齐
 Gui, Add, Edit, x6 y37 w560 h330 vMyEdit, Drag plain TXT file into this control
-Gui, Add, StatusBar,, %CURRENENCODING%
+Gui, Add, StatusBar,, ANSI
 Gui, Show,, 文本竖列对齐
 Return
 
 ; 响应单个文件拖动事件
-GuiDropFiles:	
+GuiDropFiles:
     Loop, parse, A_GuiEvent, `n
     {
         INFILE := A_LoopField
-		FileRead, FileContents, %A_LoopField%
-		GuiControl,, MyEdit, %FileContents%
-		Return
+        ENCODING := GetFileEncoding(INFILE)
+        if (ENCODING == "UTF-8+BOM")
+        {
+            UTF8OUTFILE := A_WorkingDir . "utf8tmp.txt"
+            CUTCMD := GenerateCutCommand(INFILE, UTF8OUTFILE)
+            RunWait, cmd /c %CUTCMD%,, Hide
+            ICONVCMD := GenerateIconvCommand("UTF-8", UTF8OUTFILE, ICONVOUTFILE)
+            RunWait, cmd /c %ICONVCMD%,, Hide
+            FileDelete, %UTF8OUTFILE%
+        } else if (ENCODING == "UTF-16") {
+            ICONVCMD := GenerateIconvCommand("UTF-16", INFILE, ICONVOUTFILE)
+            RunWait, cmd /c %ICONVCMD%,, Hide
+        } else { ; ANSI or UTF-8
+            FileCopy, %INFILE%, %ICONVOUTFILE%, 1
+        }
+
+        FileRead, FileContents, %ICONVOUTFILE%
+        GuiControl,, MyEdit, %FileContents%
+        SB_SetText(ENCODING)
+        Return
     }
 Return
 
-; 以ANSI编码打开
+; 只有显示为乱码时，才手动转换成ANSI编码
 SetAnsi:
-    CURRENENCODING := "ANSI"
-	SB_SetText(CURRENENCODING)
-	FileRead, FileContents, *P936 %INFILE%
-	GuiControl,, MyEdit, %FileContents%
-Return
+    ENCODING := "UTF-8"
+    SB_SetText("UTF-8? 如果仍为乱码，则源文件编码非UTF-8")
 
-; 以UTF-8编码打开
-SetUtf8:
-    CURRENENCODING := "UTF-8"
-	SB_SetText(CURRENENCODING)
-	FileRead, FileContents, *P65001 %INFILE%
-	GuiControl,, MyEdit, %FileContents%
+    ICONVCMD := GenerateIconvCommand("UTF-8", INFILE, ICONVOUTFILE)
+    RunWait, cmd /c %ICONVCMD%,, Hide
+
+    FileRead, FileContents, %ICONVOUTFILE%
+    GuiControl,, MyEdit, %FileContents%
 Return
 
 ; 对拖入的文件进行竖列对齐
 AlignColumn:
-    GAWK := "gawk -f "
-    PATTERN := A_WorkingDir . "\..\3rd\alignColumn.awk"
+    ; 竖列对齐
+    AWKCMD := GenerateAwkCommand(ICONVOUTFILE, AWKOUTFILE)
+    RunWait, cmd /c %AWKCMD%,, Hide
 
-    AWKCOMMAND := GAWK
-    AWKCOMMAND .= """"
-    AWKCOMMAND .= PATTERN
-    AWKCOMMAND .= """"
-    AWKCOMMAND .= " "
-    AWKCOMMAND .= """"
-    AWKCOMMAND .= INFILE
-    AWKCOMMAND .= """"
-    AWKCOMMAND .= " > """
-	AWKCOMMAND .= AWKOUTFILE
-	AWKCOMMAND .= """"
+    ; 消除行末空格
+    SEDCMD := GenerateSedCommand(AWKOUTFILE, SEDOUTFILE)
+    RunWait, cmd /c %SEDCMD%,, Hide
 
-	; 竖列对齐
-	RunWait, cmd /c %AWKCOMMAND%,, Hide
+    ; 打开处理后的文件
+    FileRead, FileContents, %SEDOUTFILE%
+    GuiControl,, MyEdit, %FileContents%
 
-	SED := "sed -f "
-	PATTERN := A_WorkingDir . "\..\3rd\trimtail.sed"
+    ; 选中全部内容并拷贝
+    GuiControl, Focus, MyEdit
+    Send ^a
+    Send ^c
 
-	SEDCOMMAND := SED
-	SEDCOMMAND .= """"
-	SEDCOMMAND .= PATTERN
-	SEDCOMMAND .= """"
-	SEDCOMMAND .= " "
-	SEDCOMMAND .= """"
-	SEDCOMMAND .= AWKOUTFILE
-	SEDCOMMAND .= """"
-	SEDCOMMAND .= " > """
-	SEDCOMMAND .= SEDOUTFILE
-	SEDCOMMAND .= """"
-
-	; 消除行末空格
-	RunWait, cmd /c %SEDCOMMAND%,, Hide
-
-	; 打开处理后的文件
-	If (CURRENENCODING = "UTF-8")
-	    FileRead, FileContents, *P65001 %SEDOUTFILE%
-	Else
-	    FileRead, FileContents, *P936 %SEDOUTFILE%
-	GuiControl,, MyEdit, %FileContents%
+    CoordMode, ToolTip, Screen  ; 把ToolTips放置在相对于屏幕坐标的位置
+    ToolTip, 已拷贝到剪切板, 640, 400
+    Sleep, 500
+    ToolTip
 Return
 
 GuiClose:
+    FileDelete, %ICONVOUTFILE%
     FileDelete, %AWKOUTFILE%
     FileDelete, %SEDOUTFILE%
 ExitApp
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                       函数                            ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+GetFileEncoding(filename)
+{
+    encoding := "ANSI"
+    file := FileOpen(filename, "r")
+    if (file.Pos == 3)
+        encoding := "UTF-8+BOM"
+    else if (file.Pos == 2)
+        encoding := "UTF-16"
+    else
+        encoding := "ANSI" ; 也有可能是UTF-8，这会造成乱码，需要在画面上手动修正
+    
+    file.Close()
+    Return encoding
+}
+
+; gawk -f pattern.awk inFile > outFile
+GenerateAwkCommand(inFile, outFile)
+{
+    gawk := "gawk -f "
+    pattern := A_WorkingDir . "\..\3rd\alignColumn.awk"
+
+    awkcmd := gawk
+    awkcmd .= """"
+    awkcmd .= pattern
+    awkcmd .= """"
+    awkcmd .= " "
+    awkcmd .= """"
+    awkcmd .= inFile
+    awkcmd .= """"
+    awkcmd .= " > """
+    awkcmd .= outFile
+    awkcmd .= """"
+
+    Return awkcmd
+}
+
+; sed -f pattern.sed inFile > outFile
+GenerateSedCommand(inFile, outFile)
+{
+    sed := "sed -f "
+    pattern := A_WorkingDir . "\..\3rd\trimtail.sed"
+
+    sedcmd := sed
+    sedcmd .= """"
+    sedcmd .= pattern
+    sedcmd .= """"
+    sedcmd .= " "
+    sedcmd .= """"
+    sedcmd .= inFile
+    sedcmd .= """"
+    sedcmd .= " > """
+    sedcmd .= outFile
+    sedcmd .= """"
+
+    Return sedcmd
+}
+
+; iconv -f UTF-8 -t GBK inFile > outFile
+GenerateIconvCommand(coding, inFile, outFile)
+{
+    iconv := "iconv -f "
+
+    iconvcmd := iconv
+    iconvcmd .= coding
+    iconvcmd .= " -t GBK "
+    iconvcmd .= """"
+    iconvcmd .= infile
+    iconvcmd .= """"
+    iconvcmd .= " > """
+    iconvcmd .= outFile
+    iconvcmd .= """"
+
+    Return iconvcmd
+}
+
+; cut -b 4- inFile > outFile
+GenerateCutCommand(inFile, outFile)
+{
+    cut := "cut -b 4- " ; cut "EF BB BF" BOM to generate outFile with UTF-8 encoding
+    
+    cutcmd := cut
+    cutcmd .= """"
+    cutcmd .= inFile
+    cutcmd .= """"
+    cutcmd .= " > """
+    cutcmd .= outFile
+    cutcmd .= """"
+
+    Return cutcmd
+}
