@@ -19,7 +19,6 @@ AHK Script Manager管理三种类型的脚本:
   # CMD.ahk
   # NetMeter.ahk
   # 大盘监控.ahk
-  # 复制粘贴.ahk
   # 截图.ahk
   # 闹钟.ahk
   # 锁屏.ahk
@@ -37,6 +36,8 @@ AHK Script Manager管理三种类型的脚本:
 
 目前项目中包含的一次性任务脚本有：
   # +AHK版本号.ahk
+  # +CMD目录.ahk
+  # +Google翻译.ahk
   # +Oracle服务.ahk
   # +办公软件.ahk
   # +定位注册表.ahk
