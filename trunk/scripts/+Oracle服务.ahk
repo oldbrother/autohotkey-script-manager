@@ -13,7 +13,7 @@
 
 Gui, Font,, Arial
 Gui, Font, s10
-Gui, Add, ListView, x2 y0 w350 h350 gFastOperate, Index|Service|Status
+Gui, Add, ListView, -Multi x2 y0 w350 h350 gFastOperate, Index|Service|Status
 
 ; 刷新ListView
 Gosub, REFRESH
