@@ -5,6 +5,8 @@
 ; 2014/5/5
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+#Include ../lib/Anchor.ahk
+
 #SingleInstance Force
 #NoTrayIcon
 #NoEnv
@@ -13,10 +15,13 @@
 ;                        GUI                            ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; 允许调整窗口大小
+Gui, +Resize
+
 ; 设置在没有为控件指定明确的位置时使用的边距/间隔
 Gui, Margin, 0, 0
 
-Gui, Add, Edit, x0 w200 vSource
+Gui, Add, Edit, x0 w200 +Multi vSource
 GuiControl,, Source, %ClipBoard%
 Gui, Add, StatusBar
 SB_SetParts(50)
@@ -31,10 +36,18 @@ GuiClose:
 	ExitApp
 Return
 
+GuiSize:
+	DllCall("QueryPerformanceCounter", "Int64P", t0)
+	; 控件Source自动跟随窗口大小
+	Anchor("Source", "wh")
+	DllCall("QueryPerformanceCounter", "Int64P", t1)
+Return
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                        热键                           ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; 回车进行查询
 #IfWinActive ahk_class AutoHotkeyGUI
 Enter::
 	Gui, Submit, Nohide
@@ -49,7 +62,9 @@ Enter::
 		Url = http://translate.google.com.hk/translate_a/t?client=t&text=%Source%&sl=zh-CN&tl=en
 
 	SB_SetText("正在翻译", 1)
-	GoogleText := ByteToStr(WinHttpRequest(Url), "utf-8")
+	Ret := WinHttpRequest(Url)
+	GoogleText := ByteToStr(Ret, "utf-8")
+	; BUG 这个模式只能返回第一段的结果
 	NeedleRegEx = O)"(.*?)"
 	FoundPos := RegExMatch(GoogleText, NeedleRegEx, OutMatch)
 	ResultText := (! ErrorLevel) ? OutMatch.Value(1) : ""
@@ -60,8 +75,14 @@ Enter::
 Return
 #IfWinActive
 
+; Ctrl + Enter 代替平时的回车，用于换行
 #IfWinActive ahk_class AutoHotkeyGUI
-q::
+^Enter::
+	Send {`r}
+Return
+#IfWinActive
+
+#IfWinActive ahk_class AutoHotkeyGUI
 Esc::
 	Gosub, GuiClose
 Return
