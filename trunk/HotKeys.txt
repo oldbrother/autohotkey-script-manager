@@ -11,14 +11,6 @@ CMD.ahk
 Ctrl + L				仿Linux Term下Ctrl+L的清屏行为
 Ctrl + V				CMD窗口粘贴
 
-复制粘贴.ahk
-Ctrl + 1				复制1
-Ctrl + 2				复制2
-Ctrl + 3				复制3
-Alt + 1					粘贴1
-Alt + 2					粘贴2
-Alt + 3					粘贴3
-
 截图.ahk
 Ctrl + Shift + 左键		截图存为PNG图片，并保存到桌面
 Ctrl + Shift + 右键		截图保存到ClipBoard中，用于直接粘贴
