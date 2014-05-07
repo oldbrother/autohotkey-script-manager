@@ -28,5 +28,6 @@ Win + L					锁屏并关闭屏幕
 
 +Google翻译.ahk
 Enter                   查询
-q/Esc                   退出
+Ctrl + Enter            代替普通的回车，进行换行
+Esc                     退出
 
