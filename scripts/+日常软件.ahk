@@ -13,7 +13,7 @@ Process, Exist
 
 ExeList := Object()
 ExeList.Insert("E:\系统工具\DeskWidget\DeskWidget.exe", 2)
-ExeList.Insert("E:\系统工具\Yz Dock 0.83\YzDock.exe", 5)
+;ExeList.Insert("E:\系统工具\Yz Dock 0.83\YzDock.exe", 5)
 ExeList.Insert("E:\Program Files\QQ2012\Bin\QQ.exe", 5)
 
 for Target, Seconds in ExeList

@@ -25,3 +25,8 @@ Ctrl + Shift + 右键		截图保存到ClipBoard中，用于直接粘贴
 
 锁屏.ahk
 Win + L					锁屏并关闭屏幕
+
++Google翻译.ahk
+Enter                   查询
+q/Esc                   退出
+

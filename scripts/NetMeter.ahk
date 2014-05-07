@@ -12,7 +12,7 @@ Gui, +LastFound
 WinSet, TransColor, EEAA99
 Gui, Add, Progress,      w100 h10 cGreen -0x1 vDn
 Gui, Add, Progress, x+10 w100 h10 cRed   -0x1 vUp
-Gui, Show, x900 y2 , NetMeter                  ; Adjust X & Y to suit your screen res
+Gui, Show, x900 y1 , NetMeter                  ; Adjust X & Y to suit your screen res
 
 If GetIfTable(tb)
    ExitApp
