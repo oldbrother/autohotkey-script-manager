@@ -2,6 +2,10 @@
 ; Google中译英，英译汉
 ; 能自动识别中英文
 ; 
+; Enter: 翻译
+; Ctrl + Enter: 文本换行
+; F1: 朗读
+;
 ; gaochao.morgen@gmail.com
 ; 2014/5/5
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -89,6 +93,12 @@ Esc::
 Return
 #IfWinActive
 
+#IfWinActive ahk_class AutoHotkeyGUI
+F1::
+	TTSPlay(ClipBoard)
+Return
+#IfWinActive
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                       函数                            ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -119,4 +129,25 @@ ByteToStr(body, charset)
 	Stream.Close()
 
 	Return str
+}
+
+; Google语音引擎
+TTSPlay(String = "")
+{
+	; 仅朗读英文
+	pos := RegExMatch(String, "[a-zA-Z]+")
+	if !(ErrorLevel = 0 && pos > 0)
+		Return 0
+
+	if StrLen(String) > 100
+	{
+	   Msgbox, 16,, String too long, a maximum of 100 characters!
+	   Return 0
+	}
+
+	global tts_Thread
+	tts_Thread := ComObjCreate("WMPlayer.OCX")
+	tts_Thread.settings.volume := 100
+	tts_Thread.url := "http://translate.google.com/translate_tts?q=" . String . "&tl=EN"
+	Return 1
 }
