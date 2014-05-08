@@ -151,7 +151,7 @@ TTSPlay(String = "")
 		global tts_Thread
 		tts_Thread := ComObjCreate("WMPlayer.OCX")
 		tts_Thread.settings.volume := 100
-		tts_Thread.url := "http://translate.google.com/translate_tts?q=" . String . "&tl=EN"
+		tts_Thread.url := "http://translate.google.com/tl=EN&translate_tts?q=" . String
 	}
 	else
 	{
