@@ -2,6 +2,7 @@
 ; 一键启动AHK帮助文件，并检索剪切板中的内容
 ; 注意: 跟使用的AutoHotkey.chm有关系，不同版本的chm可能搜索框的classNN不同
 ; 我所使用的是: http://sourceforge.net/projects/ahkcn/
+; 版本为: v1.1.13.01
 ; 
 ; Alt + H: 在AHK帮助文件中查找剪切板内容
 ;
