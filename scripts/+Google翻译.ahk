@@ -155,7 +155,7 @@ TTSPlay(String = "")
 	}
 	else
 	{
-		FilePath := A_scriptdir . "\tts.mp3"
+		FilePath := A_ScriptDir . "\tts.mp3"
 		Unicode2UTF8(String, Utf8Str)
 		target := UrlEncode(Utf8Str)
 		url := "http://translate.google.com/translate_tts?tl=zh-CN&ie=UTF-8&q=" . target
