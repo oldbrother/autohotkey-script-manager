@@ -52,11 +52,7 @@ GuiDropFiles:
             ;CUTCMD := GenerateCutCommand(INFILE, UTF8OUTFILE)
             ;RunWait, cmd /c %CUTCMD%,, Hide
 
-			; 读入带BOM的内容，再回写成不带BOM的内容
-			FileRead, Content, %INFILE%
-			FileEncoding, UTF-8-RAW
-			FileAppend, %Content%, %UTF8OUTFILE%
-			FileEncoding
+			RemoveUTF8BOM(INFILE, UTF8OUTFILE)
 
             ICONVCMD := GenerateIconvCommand("UTF-8", UTF8OUTFILE, ICONVOUTFILE)
             RunWait, cmd /c %ICONVCMD%,, Hide
@@ -213,4 +209,15 @@ GenerateCutCommand(inFile, outFile)
     cutcmd .= """"
 
     Return cutcmd
+}
+
+; 去掉UTF-8+BOM文件的BOM头
+RemoveUTF8BOM(InputFile, OutputFile)
+{
+	OrigEncoding := A_FileEncoding
+	FileEncoding ; 脚本默认以ANSI编码处理外部文件
+	FileRead, Content, %InputFile%
+	FileEncoding, UTF-8-RAW
+	FileAppend, %Content%, %OutputFile%
+	FileEncoding, %OrigEncoding% ; 恢复编码
 }
