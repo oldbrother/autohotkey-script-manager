@@ -16,6 +16,9 @@
 #NoTrayIcon
 #NoEnv
 
+; 判断全英文的正则表达式
+global EnglishPattern := "^[0-9a-zA-Z \.,_\-'""]+$"
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                        GUI                            ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -43,7 +46,7 @@ Return
 
 GuiSize:
 	DllCall("QueryPerformanceCounter", "Int64P", t0)
-	; 控件Source自动跟随窗口大小
+	; Edit控件自动跟随窗口大小
 	Anchor("Source", "wh")
 	DllCall("QueryPerformanceCounter", "Int64P", t1)
 Return
@@ -60,17 +63,15 @@ Enter::
 	SB_SetText("", 2)
 
 	; 判断中译英还是英译中
-	pos := RegExMatch(Source, "^[0-9a-zA-Z \.,_'""]+$")
+	pos := RegExMatch(Source, EnglishPattern)
 	if (ErrorLevel = 0 && pos > 0)
-		Url = http://translate.google.com.hk/translate_a/t?client=t&text=%Source%&sl=en&tl=zh-CN
+		url = http://translate.google.com.hk/translate_a/t?client=t&text=%Source%&sl=en&tl=zh-CN
 	else
-		Url = http://translate.google.com.hk/translate_a/t?client=t&text=%Source%&sl=zh-CN&tl=en
+		url = http://translate.google.com.hk/translate_a/t?client=t&text=%Source%&sl=zh-CN&tl=en
 
 	SB_SetText("正在翻译", 1)
-	Ret := WinHttpRequest(Url)
-	GoogleText := ByteToStr(Ret, "utf-8")
-	; BUG 这个模式只能返回第一段的结果
-	NeedleRegEx = O)"(.*?)"
+	GoogleText := ByteToStr(WinHttpRequest(url), "UTF-8")
+	NeedleRegEx = O)"(.*?)"	; BUG 这个模式只能返回第一段的结果
 	FoundPos := RegExMatch(GoogleText, NeedleRegEx, OutMatch)
 	ResultText := (! ErrorLevel) ? OutMatch.Value(1) : ""
 	GuiControl,, Result, %ResultText%
@@ -119,16 +120,16 @@ WinHttpRequest(HttpUrl)
 ; 将原始数据流以指定的编码的形式读出
 ByteToStr(body, charset)
 {
-	Stream := ComObjCreate("Adodb.Stream")
-	Stream.Type := 1
-	Stream.Mode := 3
-	Stream.Open()
-	Stream.Write(body)
-	Stream.Position := 0
-	Stream.Type := 2
-	Stream.Charset := charset
-	str := Stream.ReadText()
-	Stream.Close()
+	STREAM := ComObjCreate("Adodb.Stream")
+	STREAM.Type := 1
+	STREAM.Mode := 3
+	STREAM.Open()
+	STREAM.Write(body)
+	STREAM.Position := 0
+	STREAM.Type := 2
+	STREAM.Charset := charset
+	str := STREAM.ReadText()
+	STREAM.Close()
 
 	Return str
 }
@@ -139,19 +140,18 @@ TTSPlay(String = "")
 	if (StrLen(String) > 100)
 	{
 		Msgbox, 16,, String too long, a maximum of 100 characters!
-		Return 0
+		Return
 	}
 
 	; 用Google翻译的语音引擎朗读
 	; 英文直接朗读没有问题
 	; 中文直接朗读很慢，原因不明. 因此先下载，再读
-	pos := RegExMatch(String, "^[0-9a-zA-Z \.,_'""]+$")
+	pos := RegExMatch(String, EnglishPattern)
 	if (ErrorLevel = 0 && pos > 0)
 	{
-		global tts_Thread
-		tts_Thread := ComObjCreate("WMPlayer.OCX")
-		tts_Thread.settings.volume := 100
-		tts_Thread.url := "http://translate.google.com/tl=EN&translate_tts?q=" . String
+		GTTS := ComObjCreate("WMPlayer.OCX")
+		GTTS.settings.volume := 100
+		GTTS.url := "http://translate.google.com/translate_tts?tl=EN&q=" . String
 	}
 	else
 	{
@@ -163,8 +163,6 @@ TTSPlay(String = "")
 		SoundPlay, %FilePath%, wait
 		FileDelete, %FilePath%
 	}
-
-	Return 1
 }
 
 ; Unicode转为UTF-8编码. AHKL内部使用Unicode，因此中文一般都需要先转成UTF-8
@@ -236,6 +234,6 @@ UrlEncode(ChineseUtf8)
 	}
 
 	SetFormat, Integer, %OldFormat%
-	return Out
+	Return Out
 }
 
