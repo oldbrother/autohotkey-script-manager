@@ -46,9 +46,18 @@ GuiDropFiles:
         ENCODING := GetFileEncoding(INFILE)
         if (ENCODING == "UTF-8+BOM")
         {
-            UTF8OUTFILE := A_WorkingDir . "utf8tmp.txt" ; 临时文件，保存UTF-8+BOM文件截掉BOM标志后的内容
-            CUTCMD := GenerateCutCommand(INFILE, UTF8OUTFILE)
-            RunWait, cmd /c %CUTCMD%,, Hide
+            UTF8OUTFILE := A_WorkingDir . "\utf8tmp.txt" ; 临时文件，保存UTF-8+BOM文件截掉BOM标志后的内容
+
+			; cut命令有BUG
+            ;CUTCMD := GenerateCutCommand(INFILE, UTF8OUTFILE)
+            ;RunWait, cmd /c %CUTCMD%,, Hide
+
+			; 读入带BOM的内容，再回写成不带BOM的内容
+			FileRead, Content, %INFILE%
+			FileEncoding, UTF-8-RAW
+			FileAppend, %Content%, %UTF8OUTFILE%
+			FileEncoding
+
             ICONVCMD := GenerateIconvCommand("UTF-8", UTF8OUTFILE, ICONVOUTFILE)
             RunWait, cmd /c %ICONVCMD%,, Hide
             FileDelete, %UTF8OUTFILE%
@@ -193,6 +202,7 @@ GenerateIconvCommand(coding, inFile, outFile)
 GenerateCutCommand(inFile, outFile)
 {
     cut := "cut -b 4- " ; cut "EF BB BF" BOM to generate outFile with UTF-8 encoding
+			 			; 该命令有BUG，会造成每行第一个字符被裁剪
     
     cutcmd := cut
     cutcmd .= """"
