@@ -16,10 +16,13 @@
 
 ; Alt + H
 !h::
-	IfWinExist, ahk_class HH Parent {
+	IfWinExist, ahk_class HH Parent
+	{
 	    WinActivate  ; 自动使用上面找到的窗口.
 	    WinMaximize  ; 同上
-	} else {
+	}
+	else
+	{
 		Run, %ProgramFiles%\AutoHotkey\AutoHotkey.chm,, Max
 	}
 

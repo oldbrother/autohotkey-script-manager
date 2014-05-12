@@ -109,10 +109,13 @@ Return
 ; 请求网页，返回结果
 WinHttpRequest(HttpUrl)
 {
+	; 不产生错误. 当域名不能解析时，会报错造成脚本中断
+	ComObjError(false)
+
 	XMLHTTP := ComObjCreate("Microsoft.XMLHTTP")
-	XMLHTTP.open("GET", HttpUrl, false)
-	XMLHTTP.setRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:11.0) Gecko/20100101 Firefox/11.0")
-	XMLHTTP.send()
+	XMLHTTP.Open("GET", HttpUrl, false)
+	XMLHTTP.SetRequestHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:11.0) Gecko/20100101 Firefox/11.0")
+	XMLHTTP.Send()
 
 	Return XMLHTTP.ResponseBody
 }
