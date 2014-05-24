@@ -1,4 +1,4 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 一键关闭任务栏上的所有打开窗口
 ; 
 ; gaochao.morgen@gmail.com
@@ -17,7 +17,7 @@ Return
 
 CloseAllWindow()
 {
-	static WM_SETREDRAW=0xB 
+	static WM_SETREDRAW = 0xB 
 	TaskbarHwnd := Taskbar_GetHandle()
 	SendMessage, WM_SETREDRAW, 0,,, ahk_id %TaskbarHwnd%
 
@@ -31,6 +31,6 @@ CloseAllWindow()
 		WinClose, ahk_id %Hwnd%
 	}
 
-	SendMessage, WM_SETREDRAW, 1, , , ahk_id %TaskbarHwnd%
+	SendMessage, WM_SETREDRAW, 1,,, ahk_id %TaskbarHwnd%
 }
 
