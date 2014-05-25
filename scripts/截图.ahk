@@ -4,6 +4,8 @@
 ; Ctrl + Shift + 左键: 截图存为PNG图片，并保存到桌面
 ; Ctrl + Shift + 右键: 截图保存到ClipBoard中，直接粘贴
 ;
+; 已知BUG: 用WinSet设置了TransColor的窗口无法捕捉
+;
 ; gaochao.morgen@gmail.com
 ; 2014/2/12
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
