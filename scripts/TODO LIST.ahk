@@ -1,13 +1,15 @@
 ﻿;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; 在桌面显示TODO LIST
-; 首次点击按钮更新TODO条目，再次点击按钮保存并显示为背景透明
-; 
-; 修改自Uberi的To-Do List / Reminders
-; URL: http://www.autohotkey.com/board/topic/57455-to-do-list-reminders
+;
+; 用法: 首次点击按钮更新TODO条目，再次点击按钮保存并显示为背景透明
 ;
 ; NOTE:
-; 1. Edit控件设置为透明，则点击Edit控件区域会穿透控件，导致事件无法触发. 因此设置了按钮使Edit控件临时变得不透明，以便添加新条目
-; 2. Edit控件为透明状态时，仍然可以修改TODO的值，但不能新增TODO条目
+; 	本程序将Edit控件设置为透明. 当点击Edit控件时，在Edit空白区域会穿透控件，导致事件无法触发
+; 	虽然点击Edit控件文字部分有时候会触发事件，但有时候不能触发，完全取决于点击的位置
+;	因此设置了按钮使Edit控件临时变得不透明，以便更新条目，更新完毕再次点击按钮变成透明显示
+;
+; 修改自Uberi的To-Do List / Reminders
+; URL: http://www.autohotkey.com/board/topic/57455-to-do-list-reminders
 ;
 ; gaochao.morgen@gmail.com
 ; 2014/5/24
@@ -24,15 +26,20 @@ WINDOW_X := 900		; 窗口起始X
 WINDOW_Y := 230		; 窗口起始Y
 WINDOW_W := 232		; 窗口宽度. 同时也是Edit控件宽度
 WINDOW_H := 300 	; 窗口高度
-BUTTON_H := 20		; Button控件高度
 EDIT_H := 20		; Edit控件高度
-CONTROL_SPACE := 3	; 控件垂直间距
+EDIT_SPACE := 1		; Edit控件垂直间距
+BUTTON_H := 20		; Button控件高度
+BUTTON_SPACE := 5	; Button控件与Edit控件的垂直间距
 BGCOLOR = 00FF00	; 背景颜色RGB
 
-FieldCount := Round((WINDOW_H - BUTTON_H) / (EDIT_H + CONTROL_SPACE))	; TODO-LIST最大条目为FieldCount条
+FieldCount := Round((WINDOW_H-BUTTON_H-BUTTON_SPACE) / (EDIT_H+EDIT_SPACE))	; TODOLIST最大条目为FieldCount条
 
 Changed := false	; 记录窗口是否激活
 LastField = 0		; 记录最后一个显示出来的Edit控件索引
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                        GUI                            ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 CoordMode, Mouse
 Gui, -Caption +ToolWindow +LastFound
@@ -43,19 +50,20 @@ WinSet, Transparent, Off			; 窗口设置为不透明
 WinSet, TransColor, %BGCOLOR% 255	; 让窗口中指定颜色的所有像素透明
 
 Gui, Font, cRed S9, Arial
-Gui, Add, Button, h%BUTTON_H% +0x8000 gBtClick, TODO LIST
+Gui, Add, Button, h%BUTTON_H% +0x8000 HwndHwndButton gBtClick, TODO LIST
 
 ; 添加所有Edit控件
+Gui, Font, cRed S9 underline, Arial
 Loop, %FieldCount%
 {
 	; 相对于窗口的坐标
 	Coordinate := " x0"
-	Coordinate .= " y" . (A_Index * (EDIT_H+CONTROL_SPACE))
+	Coordinate .= " y" . (A_Index * (EDIT_H+EDIT_SPACE) + BUTTON_SPACE)
 	Coordinate .= " w" . WINDOW_W 
 	Coordinate .= " h" . EDIT_H
 
 	Style := Coordinate
-	Style .= " Hidden -E0x200 +0x800000 " ; E0x200 = WS_EX_CLIENTEDGE; 0x800000 = WS_BORDER = Border
+	Style .= " Hidden -E0x200 " 		; E0x200 = WS_EX_CLIENTEDGE
 	Style .= " vField" . A_Index
 	Style .= " HwndHwndField" . A_Index
 	Gui, Add, Edit, %Style%
@@ -70,9 +78,14 @@ Gui, Show, x%WINDOW_X% y%WINDOW_Y% w%WINDOW_W% h%WINDOW_H%, TODOLIST
 SetFormat, Integer, Hex
 OnMessage(0x111, "ClickedEdit")
 Gosub, Load
+OnExit, GuiClose
 Return
 
-; 加载文件内容到TODO-LIST
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                      主画面响应                       ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; 加载文件内容到TODOLIST
 Load:
 	Critical				; 防止当前线程被其他线程中断
 	SetFormat, Integer, D	; 运算结果为10进制
@@ -80,64 +93,70 @@ Load:
 	IfNotExist, %SavePath%
 	{
 		AddNewField()
-		GuiControl,, Field1, Note
+		HideEditBorder(LastField)
+		GuiControl,, Field1, 点击按钮添加新条目
 		Return
 	}
 
-	FileRead, Temp1, %SavePath%
-
-	if Temp1 = 
+	FileRead, FileContent, %SavePath%
+	if FileContent = 
 	{
 		AddNewField()
-		GuiControl,, Field1, Note
-		Temp2 = 
+		HideEditBorder(LastField)
+		GuiControl,, Field1, 点击按钮添加新条目
 		Return
 	}
 	else
 	{
 		; 配置文件的每行内容依次显示出来
-		Loop, Parse, Temp1, `n, `r
+		Loop, Parse, FileContent, `n, `r
 		{
 			if A_LoopField = 
 				continue
 			AddNewField()
 			GuiControl,, Field%A_Index%, %A_LoopField%
 		}
-	}
 
-	ClearEmptyFields()
+		ClearEmptyFields()
+		Loop %FieldCount%
+			HideEditBorder(A_Index)
+	}
 Return
 
-; 将TODO-LIST中的内容保存到文件
+; 将TODOLIST中的内容保存到文件
 Save:
 	Critical
 	SetFormat, Integer, D
-	Temp2 = 
+	NewFileContent = 
 	Loop, %LastField%
 	{
-		GuiControlGet, Temp1,, Field%A_Index%
-		Temp2 .= Temp1 . "`n"
+		GuiControlGet, EditContent,, Field%A_Index%
+		NewFileContent .= EditContent . "`n"
 	}
-	StringTrimRight, Temp2, Temp2, 1
+	StringTrimRight, NewFileContent, NewFileContent, 1
 	IfExist, %SavePath%
 		FileDelete, %SavePath%
-	FileAppend, %Temp2%, %SavePath%
+	FileAppend, %NewFileContent%, %SavePath%
 Return
 
 ; 修改TODOLIST的内容
-; 首次点击时，Edit控件将处于激活状态，允许添加新的TODO
+; 首次点击时，Edit控件将处于激活状态，允许添加新的TODO条目
 ; 再次点击时，Edit控件将处于非激活状态(只是变透明了，实际上还是激活的)
 BtClick:
 	ClearEmptyFields()
 	if (!Changed)
 	{
-		Gui, Color,, cDefault		; 设置控件背景颜色为默认值，使他们不再透明
+		Gui, Color,, cDefault		; 设置控件背景颜色为默认颜色，使他们不再透明
+		Loop, %LastField%			; 为当前可见的所有Edit控件设置边框
+			ShowEditBorder(A_Index)
 		AddNewField()				; 加一行空行，以便添加新内容
 	}
 	else
 	{
-		ClearEmptyFields()
 		Gui, Color,, %BGCOLOR%		; 设置控件背景颜色，使他们再次透明
+		ClearEmptyFields()
+		Loop, %FieldCount%			; 隐藏所有Edit控件的边框
+			HideEditBorder(A_Index)
 		Gosub, Save
 	}
 
@@ -150,7 +169,32 @@ GuiClose:
 	ExitApp
 Return
 
-; 当窗口处于激活状态时，点击最后一个Edit控件将再产生一个新的Edit控件
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                       函数                            ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; 给Edit控件加上边框
+ShowEditBorder(EditIndex)
+{
+	EditHwnd := HwndField%EditIndex%
+	; 0x800000 = WS_BORDER = Border
+	Control, Style, +0x800000,, ahk_id %EditHwnd%
+	; 按理说设置样式后，紧跟着WinSet, Redraw就可以了, 但是测试不行
+	; 但先禁用后启用，则可以
+	Control, Disable,,, ahk_id %EditHwnd%
+	Control, Enable,,, ahk_id %EditHwnd%
+}
+
+; 去掉Edit控件的边框
+HideEditBorder(EditIndex)
+{
+	EditHwnd := HwndField%EditIndex%
+	Control, Style, -0x800000,, ahk_id %EditHwnd%
+	Control, Disable,,, ahk_id %EditHwnd%
+	Control, Enable,,, ahk_id %EditHwnd%
+}
+
+; 点击最后一个Edit控件时，产生一个新的Edit控件
 ClickedEdit(wParam, lParam)
 {
 	global
@@ -160,20 +204,26 @@ ClickedEdit(wParam, lParam)
 		if (lParam = HwndField%LastField%)
 			AddNewField()
 	}
+	else if wParam = 0x200
+	{
+  		ClearEmptyFields()
+		AddNewField()
+	}
 }
 
-; 显示一个新的Edit控件
+; 显示一个新的带边框Edit控件
 AddNewField()
 {
 	global
 	SetFormat, Integer, D
 	if LastField = %FieldCount%
 		Return
-	LastField ++
+	LastField++
+	ShowEditBorder(LastField)
 	GuiControl, Show, Field%LastField%
 }
 
-; 清空内容为空的Edit控件
+; 隐藏所有内容为空的Edit控件
 ClearEmptyFields()
 {
 	global
@@ -189,30 +239,31 @@ ClearEmptyFields()
 		if A_Index = 1
 			continue
 
-		; 碰到一个空行，则把其后的所有TODO均向上移动一行
-		GuiControlGet, Temp1,, Field%A_Index%
-		if Temp1 = 
+		; 碰到一个空行，则把其后的所有TODO条目均向上移动一行
+		GuiControlGet, EditLine,, Field%A_Index%
+		if EditLine = 
 		{
 			A_Index1 = %A_Index%
 			Loop, % VisiableField - A_Index1
 			{
-				A_Index1 ++
-				GuiControlGet, Temp1,, Field%A_Index1%
+				A_Index1++
+				GuiControlGet, EditLine,, Field%A_Index1%
 				GuiControl,, Field%A_Index1%
-				GuiControl,, % "Field" . (A_Index1 - 1), %Temp1%
+				GuiControl,, % "Field" . (A_Index1 - 1), %EditLine%
 			}
 
 			; 空行被移动到了最后一行，因此将最后一行隐藏
 			GuiControl, Hide, Field%LastField%
-			LastField --
+			LastField--
 		}
 	}
 
 	; 最后一行若为空行，则直接隐藏
-	GuiControlGet, Temp1,, Field%LastField%
-	if Temp1 = 
+	GuiControlGet, EditLine,, Field%LastField%
+	if EditLine = 
 	{
 		GuiControl, Hide, Field%LastField%
-		LastField --
+		LastField--
 	}
 }
+
