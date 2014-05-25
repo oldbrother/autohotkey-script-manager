@@ -18,6 +18,7 @@ AHK Script Manager管理三种类型的脚本:
   # AHK帮助.ahk
   # CMD.ahk
   # NetMeter.ahk
+  # TODO LIST.ahk
   # 大盘监控.ahk
   # 截图.ahk
   # 闹钟.ahk
