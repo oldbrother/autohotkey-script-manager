@@ -95,13 +95,6 @@ F1::
 Return
 #IfWinActive
 
-; ESC退出程序
-#IfWinActive ahk_class AutoHotkeyGUI
-Esc::
-	Gosub, GuiClose
-Return
-#IfWinActive
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                       函数                            ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
