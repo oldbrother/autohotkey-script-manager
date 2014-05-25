@@ -52,7 +52,7 @@ Loop, %FieldCount%
 	Gui, Add, Edit, %Style%
 }
 
-Gui, Show, x%WINDOW_X% y%WINDOW_Y% w%WINDOW_W% h%WINDOW_H% NoActivate, TODOLIST
+Gui, Show, x%WINDOW_X% y%WINDOW_Y% w%WINDOW_W% h%WINDOW_H%, TODOLIST
 
 SetFormat, Integer, Hex
 OnMessage(0x111, "ClickedEdit")
@@ -60,7 +60,6 @@ Gosub, Load
 OnExit, Save
 Return
 
-Esc::
 GuiClose:
 ExitApp
 
