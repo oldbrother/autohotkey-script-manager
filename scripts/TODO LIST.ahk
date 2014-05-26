@@ -3,6 +3,10 @@
 ;
 ; 用法: 首次点击按钮更新TODO条目，再次点击按钮保存并显示为背景透明
 ;
+; 快捷键:
+; Enter: 保存
+; Ctrl + Enter: 文本换行
+;
 ; NOTE:
 ; 	本程序将Edit控件设置为透明. 当点击Edit控件时，在Edit空白区域会穿透控件，导致事件无法触发
 ; 	虽然点击Edit控件文字部分有时候会触发事件，但有时候不能触发，完全取决于点击的位置
@@ -187,6 +191,17 @@ Enter::
 		HideEditBorder(A_Index)
 	Gosub, Save
 	Changed := false
+Return
+#IfWinActive
+
+; Ctrl + Enter 换行
+#IfWinActive TODOLIST
+^Enter::
+	Gosub, Save
+	FocusIndex := LastField
+	GuiControl, Focus, % HwndField%FocusIndex%
+	AddNewField()
+	GuiControl, Focus, % HwndField%FocusIndex%
 Return
 #IfWinActive
 
