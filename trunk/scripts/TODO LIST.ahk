@@ -33,7 +33,7 @@ WINDOW_H := 300 	; 窗口高度
 EDIT_H := 20		; Edit控件高度
 EDIT_SPACE := 1		; Edit控件垂直间距
 BUTTON_H := 20		; Button控件高度
-BUTTON_SPACE := 5	; Button控件与Edit控件的垂直间距
+BUTTON_SPACE := 7	; Button控件与Edit控件的垂直间距
 BGCOLOR = 00FF00	; 背景颜色RGB
 
 FieldCount := Round((WINDOW_H-BUTTON_H-BUTTON_SPACE) / (EDIT_H+EDIT_SPACE))	; TODOLIST最大条目为FieldCount条
@@ -57,7 +57,7 @@ Gui, Font, cRed S9, Arial
 Gui, Add, Button, h%BUTTON_H% +0x8000 HwndHwndButton gBtClick, TODO LIST
 
 ; 添加所有Edit控件
-Gui, Font, cRed S9 underline, Arial
+Gui, Font, cRed S10 underline, SIMSUN
 Loop, %FieldCount%
 {
 	; 相对于窗口的坐标
