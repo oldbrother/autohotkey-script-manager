@@ -10,9 +10,13 @@
 ; 2014/2/4
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+#Include ../lib/SystemCursor.ahk
+
 #SingleInstance Force	; 跳过对话框并自动替换旧实例
 #NoTrayIcon				; 不显示托盘图标
 #NoEnv					; 不检查空变量是否为环境变量（建议所有新脚本使用）
+
+OnExit, ShowCursor		; 确保到脚本退出时鼠标光标是显示的
 
 ; Alt + H
 !h::
@@ -26,9 +30,22 @@
 		Run, %ProgramFiles%\AutoHotkey\AutoHotkey.chm,, Max
 	}
 
-	Sleep, 500
+	MouseGetPos, X, Y	; 获取鼠标原来的位置
+	SystemCursor("Off")	; 隐藏鼠标，否则眼睛受不了
+
+	; 测试发现，CHM文件Edit控件的ClassNN会发生变化，所以先移动到控件位置获取其ClassNN
+	MouseMove, 100, 150
+	MouseGetPos,,,, CtrlHwnd
+
+	Sleep, 300
 	Send !n				; Alt+N 切换到索引标签
-	ControlSetText, Edit1, %ClipBoard%, ahk_class HH Parent	; 设置搜索框内容
+	ControlSetText, %CtrlHwnd%, %ClipBoard%, ahk_class HH Parent	; 设置搜索框内容
 	Send {Enter} 		; 回车确认检索
+
+	MouseMove, %X%, %Y% ; 到达文本正文
+	SystemCursor("On")	; 恢复鼠标
 Return
 
+ShowCursor:
+	SystemCursor("On")
+ExitApp
