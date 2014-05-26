@@ -102,25 +102,27 @@ Load:
 		Return
 	}
 
-	FileRead, FileContent, %SavePath%
-	if FileContent = 
+	LineCount := 0
+	Loop, Read, %SavePath%
+	{
+		; 跳过空行
+		pos := RegExMatch(A_LoopReadLine, "^([ \t]*)$")
+		if (ErrorLevel = 0 && pos > 0)
+			continue
+
+		LineCount++
+		AddNewField()
+		GuiControl,, Field%LineCount%, %A_LoopReadLine%
+	}
+
+	if (LineCount = 0)
 	{
 		AddNewField()
 		HideEditBorder(LastField)
 		GuiControl,, Field1, 点击按钮添加新条目
-		Return
 	}
 	else
 	{
-		; 配置文件的每行内容依次显示出来
-		Loop, Parse, FileContent, `n, `r
-		{
-			if A_LoopField = 
-				continue
-			AddNewField()
-			GuiControl,, Field%A_Index%, %A_LoopField%
-		}
-
 		ClearEmptyFields()
 		Loop %FieldCount%
 			HideEditBorder(A_Index)
@@ -272,9 +274,6 @@ ClearEmptyFields()
 	; 处理到倒数第二行
 	Loop, % VisiableField - 1
 	{
-		if A_Index = 1
-			continue
-
 		; 碰到一个空行，则把其后的所有TODO条目均向上移动一行
 		GuiControlGet, EditLine,, Field%A_Index%
 		if EditLine = 
