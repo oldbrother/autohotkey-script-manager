@@ -171,6 +171,26 @@ GuiClose:
 Return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                        热键                           ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; 回车保存. 仅在处于激活状态时才有效
+#IfWinActive TODOLIST
+Enter::
+	if (!Changed)
+		Return
+
+	Gui, Submit, Nohide
+	Gui, Color,, %BGCOLOR%		; 设置控件背景颜色，使他们再次透明
+	ClearEmptyFields()
+	Loop, %FieldCount%			; 隐藏所有Edit控件的边框
+		HideEditBorder(A_Index)
+	Gosub, Save
+	Changed := false
+Return
+#IfWinActive
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;                       函数                            ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
