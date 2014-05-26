@@ -150,6 +150,7 @@ BtClick:
 		Loop, %LastField%			; 为当前可见的所有Edit控件设置边框
 			ShowEditBorder(A_Index)
 		AddNewField()				; 加一行空行，以便添加新内容
+		GuiControl, Focus, % HwndField%LastField%
 	}
 	else
 	{
