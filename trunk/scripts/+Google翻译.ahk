@@ -56,7 +56,7 @@ Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; 回车进行查询
-#IfWinActive ahk_class AutoHotkeyGUI
+#IfWinActive Google翻译
 Enter::
 	Gui, Submit, Nohide
 	SB_SetText("", 1)
@@ -82,14 +82,14 @@ Return
 #IfWinActive
 
 ; Ctrl + Enter 代替平时的回车，用于换行
-#IfWinActive ahk_class AutoHotkeyGUI
+#IfWinActive Google翻译
 ^Enter::
 	Send {`r}
 Return
 #IfWinActive
 
 ; F1进行朗读
-#IfWinActive ahk_class AutoHotkeyGUI
+#IfWinActive Google翻译
 F1::
 	TTSPlay(ClipBoard)
 Return
