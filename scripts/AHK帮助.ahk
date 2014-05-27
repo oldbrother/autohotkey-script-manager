@@ -24,10 +24,13 @@ OnExit, ShowCursor		; 确保到脚本退出时鼠标光标是显示的
 	{
 	    WinActivate  ; 自动使用上面找到的窗口.
 	    WinMaximize  ; 同上
+		Sleep, 200
 	}
 	else
 	{
 		Run, %ProgramFiles%\AutoHotkey\AutoHotkey.chm,, Max
+		Sleep, 700
+		WinActivate
 	}
 
 	MouseGetPos, X, Y	; 获取鼠标原来的位置
@@ -37,7 +40,6 @@ OnExit, ShowCursor		; 确保到脚本退出时鼠标光标是显示的
 	MouseMove, 100, 150
 	MouseGetPos,,,, CtrlHwnd
 
-	Sleep, 300
 	Send !n				; Alt+N 切换到索引标签
 	ControlSetText, %CtrlHwnd%, %ClipBoard%, ahk_class HH Parent	; 设置搜索框内容
 	Send {Enter} 		; 回车确认检索
