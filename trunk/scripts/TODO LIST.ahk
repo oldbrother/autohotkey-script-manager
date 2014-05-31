@@ -26,12 +26,13 @@
 
 SavePath = %A_ScriptDir%\..\config\TODO.config
 
-WINDOW_X := 900		; 窗口起始X
-WINDOW_Y := 230		; 窗口起始Y
-WINDOW_W := 232		; 窗口宽度. 同时也是Edit控件宽度
+WINDOW_X := 880		; 窗口起始X
+WINDOW_Y := 250		; 窗口起始Y
+WINDOW_W := 250		; 窗口宽度
 WINDOW_H := 300 	; 窗口高度
 EDIT_H := 20		; Edit控件高度
 EDIT_SPACE := 1		; Edit控件垂直间距
+TEXT_W := 18		; Text控件宽度
 BUTTON_H := 20		; Button控件高度
 BUTTON_SPACE := 7	; Button控件与Edit控件的垂直间距
 BGCOLOR = 00FF00	; 背景颜色RGB
@@ -54,16 +55,16 @@ WinSet, Transparent, Off			; 窗口设置为不透明
 WinSet, TransColor, %BGCOLOR% 255	; 让窗口中指定颜色的所有像素透明
 
 Gui, Font, cRed S9, Arial
-Gui, Add, Button, h%BUTTON_H% +0x8000 HwndHwndButton gBtClick, TODO LIST
+Gui, Add, Button, x%TEXT_W% h%BUTTON_H% +0x8000 HwndHwndButton gBtClick, TODO LIST
 
 ; 添加所有Edit控件
 Gui, Font, cRed S10 underline, SIMSUN
 Loop, %FieldCount%
 {
 	; 相对于窗口的坐标
-	Coordinate := " x0"
+	Coordinate := " x" . TEXT_W
 	Coordinate .= " y" . (A_Index * (EDIT_H+EDIT_SPACE) + BUTTON_SPACE)
-	Coordinate .= " w" . WINDOW_W 
+	Coordinate .= " w" . WINDOW_W - TEXT_W
 	Coordinate .= " h" . EDIT_H
 
 	Style := Coordinate
@@ -75,6 +76,28 @@ Loop, %FieldCount%
 	Gui, Color,, %BGCOLOR%				; 控件背景颜色
 	Gui +LastFound						; 刚刚创建的Edit控件
 	WinSet, TransColor, %BGCOLOR% 255	; 控件设置为透明
+}
+
+; 添加索引
+Gui, Font	; 先恢复默认字体，再设置字体，否则仍然会有下划线
+Gui, Font, cRed
+Loop, %FieldCount%
+{
+	Coordinate := " x0"
+	Coordinate .= " y" . (A_Index * (EDIT_H+EDIT_SPACE) + BUTTON_SPACE)
+	Coordinate .= " w" . TEXT_W
+	Coordinate .= " h" . EDIT_H
+
+	Style := Coordinate
+	Style .= " Hidden +0x2"
+	Style .= " vIndex" . A_Index
+
+	if (A_Index < 10)
+		ShowText := "0" . A_Index . "."
+	else
+		ShowText := A_Index . "."
+	
+	Gui, Add, Text, %Style%, %ShowText%
 }
 
 Gui, Show, x%WINDOW_X% y%WINDOW_Y% w%WINDOW_W% h%WINDOW_H%, TODOLIST
@@ -149,7 +172,6 @@ Return
 ; 首次点击时，Edit控件将处于激活状态，允许添加新的TODO条目
 ; 再次点击时，Edit控件将处于非激活状态(只是变透明了，实际上还是激活的)
 BtClick:
-	ClearEmptyFields()
 	if (!Changed)
 	{
 		Gui, Color,, cDefault		; 设置控件背景颜色为默认颜色，使他们不再透明
@@ -161,9 +183,9 @@ BtClick:
 	else
 	{
 		Gui, Color,, %BGCOLOR%		; 设置控件背景颜色，使他们再次透明
-		ClearEmptyFields()
 		Loop, %FieldCount%			; 隐藏所有Edit控件的边框
 			HideEditBorder(A_Index)
+		ClearEmptyFields()
 		Gosub, Save
 	}
 
@@ -188,9 +210,9 @@ Enter::
 
 	Gui, Submit, Nohide
 	Gui, Color,, %BGCOLOR%		; 设置控件背景颜色，使他们再次透明
-	ClearEmptyFields()
 	Loop, %FieldCount%			; 隐藏所有Edit控件的边框
 		HideEditBorder(A_Index)
+	ClearEmptyFields()
 	Gosub, Save
 	Changed := false
 Return
@@ -259,6 +281,7 @@ AddNewField()
 	LastField++
 	ShowEditBorder(LastField)
 	GuiControl, Show, Field%LastField%
+	GuiControl, Show, Index%LastField%
 }
 
 ; 隐藏所有内容为空的Edit控件
@@ -289,6 +312,7 @@ ClearEmptyFields()
 
 			; 空行被移动到了最后一行，因此将最后一行隐藏
 			GuiControl, Hide, Field%LastField%
+			GuiControl, Hide, Index%LastField%
 			LastField--
 		}
 	}
@@ -298,6 +322,7 @@ ClearEmptyFields()
 	if EditLine = 
 	{
 		GuiControl, Hide, Field%LastField%
+		GuiControl, Hide, Index%LastField%
 		LastField--
 	}
 }
