@@ -92,12 +92,7 @@ Loop, %FieldCount%
 	Style .= " Hidden +0x2"
 	Style .= " vIndex" . A_Index
 
-	if (A_Index < 10)
-		ShowText := "0" . A_Index . "."
-	else
-		ShowText := A_Index . "."
-	
-	Gui, Add, Text, %Style%, %ShowText%
+	Gui, Add, Text, %Style%, % A_Index . "."
 }
 
 Gui, Show, x%WINDOW_X% y%WINDOW_Y% w%WINDOW_W% h%WINDOW_H%, TODOLIST
