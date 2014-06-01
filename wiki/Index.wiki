@@ -43,6 +43,7 @@ AHK Script Manager管理三种类型的脚本:
   # +办公软件.ahk
   # +定位注册表.ahk
   # +服务.ahk
+  # +关闭任务栏窗口.ahk
   # +清空剪切板.ahk
   # +日常软件.ahk
   # +竖列对齐.ahk
